@@ -1,15 +1,14 @@
 import Task from "./Task";
 
-export default function TaskList({ todos }) {
-    const tasks = todos.map(({ id, status, ...task }) => {
-        console.log(task);
+export default function TaskList({ todos, onCompleted, onDelete }) {
+    const tasks = todos.data.map(({ id, status, ...task }) => {
         return (
             <li key={id} className={status}>
-                <Task {...task} />
+                <Task {...task} onCompleted={() => onCompleted(id)} onDelete={() => onDelete(id)}/>
                 <input
                     type="text"
                     className="edit"
-                    value="Editing task"
+                    defaultValue={task.description}
                 ></input>
             </li>
         );
