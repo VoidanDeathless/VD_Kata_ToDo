@@ -9,39 +9,70 @@ export default class App extends Component {
         data: [
             {
                 id: 1,
-                status: "completed",
+                editing: false,
+                completed: true,
                 description: "Completed task",
                 created: `created ${formatDistanceToNow(new Date())} ago`,
             },
             {
                 id: 2,
-                status: "editing",
+                editing: true,
+                completed: true,
                 description: "Editing task",
                 created: `created ${formatDistanceToNow(new Date())} ago`,
             },
             {
                 id: 3,
-                status: "",
+                editing: false,
+                completed: false,
                 description: "Active task",
                 created: `created ${formatDistanceToNow(new Date())} ago`,
             },
         ],
+        filter: "All",
     };
 
-    changeStatus = (id) =>
+    toggleCompleted = (id) => {
         this.setState({
-            data: this.state.data.map((e) => {
-                if (e.id === id && e.status === "")
-                    return { ...e, status: "completed" };
-                if (e.id === id && e.status === "completed")
-                    return { ...e, status: "" };
-                return { ...e };
+            data: this.state.data.map((task) => {
+                if (task.id === id)
+                    return { ...task, completed: !task.completed };
+                return { ...task };
             }),
         });
+    };
+
+    getNewId = (data) =>
+        data.reduce((maxId, data) => (maxId < data.id ? data.id : maxId), 0) + 1;
+
+    addTask = (task) => {
+        this.setState({
+            data: [
+                ...this.state.data,
+                {
+                    id: this.getNewId(this.state.data),
+                    editing: false,
+                    completed: false,
+                    description: task,
+                    created: `created ${formatDistanceToNow(new Date())} ago`,
+                },
+            ],
+        });
+    };
 
     deleteTask = (id) =>
         this.setState({
-            data: this.state.data.filter((e) => e.id !== id),
+            data: this.state.data.filter((task) => task.id !== id),
+        });
+
+    changeFilter = (filter) =>
+        this.setState({
+            filter: filter,
+        });
+
+    clearCompleted = () =>
+        this.setState({
+            data: this.state.data.filter((task) => !task.completed),
         });
 
     render() {
@@ -49,15 +80,21 @@ export default class App extends Component {
             <section className="todoapp">
                 <header className="header">
                     <h1>todos</h1>
-                    <NewTaskForm />
+                    <NewTaskForm onAddTask={this.addTask} />
                 </header>
                 <section className="main">
                     <TaskList
-                        todos={this.state}
-                        onCompleted={this.changeStatus}
-                        onDelete={this.deleteTask}
+                        data={this.state.data}
+                        filter={this.state.filter}
+                        onDeleteTask={this.deleteTask}
+                        onToggleCompleted={this.toggleCompleted}
                     />
-                    <Footer />
+                    <Footer
+                        data={this.state.data}
+                        filter={this.state.filter}
+                        onChangeFilter={this.changeFilter}
+                        onClearCompleted={this.clearCompleted}
+                    />
                 </section>
             </section>
         );
