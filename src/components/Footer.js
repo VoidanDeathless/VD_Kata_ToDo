@@ -1,7 +1,18 @@
 import { Component } from "react";
+import PropTypes from 'prop-types';
 import TasksFilter from "./TasksFilter";
 
 export default class Footer extends Component {
+    static defaultProps = {
+        filter: "All"
+    };
+
+    static propTypes = {
+        data: PropTypes.arrayOf(PropTypes.object).isRequired,
+        filter: PropTypes.oneOf(["All", "Active", "Completed"]),
+        onChangeFilter: PropTypes.func.isRequired,
+    }
+
     render() {
         return (
             <footer className="footer">

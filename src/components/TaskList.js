@@ -1,17 +1,52 @@
 import { Component } from "react";
+import PropTypes from 'prop-types';
 import Task from "./Task";
 
 export default class TaskList extends Component {
+    static defaultProps = {
+        filter: "All"
+    };
+
+    static propTypes = {
+        data: PropTypes.arrayOf(PropTypes.object).isRequired,
+        filter: PropTypes.oneOf(["All", "Active", "Completed"]),
+        onDeleteTask: PropTypes.func.isRequired,
+        onToggleCompleted: PropTypes.func.isRequired,
+        onEditDescription: PropTypes.func.isRequired,
+        onChangeDescription: PropTypes.func.isRequired,
+    }
+
+    state = {
+        taskDescription: "",
+    };
+
     getStatus = (task) =>
         `${task.completed ? "completed" : ""} ${task.editing ? "editing" : ""}`;
+
+    onInput = (event) => {
+        this.setState({
+            taskDescription: event.target.value,
+        });
+    };
+
+    onEnter = (event, id) => {
+        event.preventDefault();
+        this.props.onChangeDescription(id, this.state.taskDescription);
+    };
 
     render() {
         const tasks = this.props.data
             .filter((task) => {
-                if (this.props.filter === "All") return true;
-                if (this.props.filter === "Active") return !task.completed;
-                if (this.props.filter === "Completed") return task.completed;
-                return false;
+                switch (this.props.filter) {
+                    case "All":
+                        return true;
+                    case "Active":
+                        return !task.completed;
+                    case "Completed":
+                        return task.completed;
+                    default:
+                        return false;
+                }
             })
             .map((task) => (
                 <li key={task.id} className={this.getStatus(task)}>
@@ -21,12 +56,20 @@ export default class TaskList extends Component {
                         onToggleCompleted={() =>
                             this.props.onToggleCompleted(task.id)
                         }
+                        onEditDescription={() =>
+                            this.props.onEditDescription(task.id)
+                        }
                     />
-                    <form>
+                    <form
+                        onSubmit={(event) => this.onEnter(event, task.id)}
+                        onBlur={(event) => this.onEnter(event, task.id)}
+                    >
                         <input
                             type="text"
                             className="edit"
                             defaultValue={task.description}
+                            onChange={this.onInput}
+                            onFocus={this.onInput}
                         ></input>
                     </form>
                 </li>
