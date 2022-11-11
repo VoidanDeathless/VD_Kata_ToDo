@@ -72,7 +72,6 @@ export default class App extends Component {
     this.setState((state) => ({
       data: state.data.map((task) => ({
         ...task,
-        // editing: task.id === id ? false : task.editing,
         editing: !task.id === id,
         description: task.id === id ? newDescription : task.description,
       })),
@@ -82,7 +81,6 @@ export default class App extends Component {
     this.setState((state) => ({
       data: state.data.map((task) => ({
         ...task,
-        // editing: task.id === id ? true : task.editing,
         editing: task.id === id,
       })),
     }));
