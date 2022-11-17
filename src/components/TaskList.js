@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 import Task from './Task';
 
@@ -47,7 +48,7 @@ export default class TaskList extends Component {
         }
       })
       .map((task) => (
-        <li key={task.id} className={`${task.completed ? 'completed' : ''} ${task.editing ? 'editing' : ''}`}>
+        <li key={task.id} className={classnames({ completed: task.completed, editing: task.editing })}>
           <Task
             task={task}
             onDeleteTask={() => this.props.onDeleteTask(task.id)}

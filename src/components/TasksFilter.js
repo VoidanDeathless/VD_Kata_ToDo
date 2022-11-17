@@ -16,13 +16,16 @@ export default class TasksFilter extends Component {
   render() {
     const tabs = this.props.tabs.map((tab) => (
       <li key={tab}>
-        <button
-          type="button"
-          onClick={() => this.props.onChangeFilter(tab)}
-          className={this.props.filter === tab ? 'selected' : ''}
-        >
+        <label htmlFor={tab} className={this.props.filter === tab ? 'selected' : ''}>
+          <input
+            type="radio"
+            name="filter"
+            id={tab}
+            onClick={() => this.props.onChangeFilter(tab)}
+            checked={this.props.filter === tab}
+          />
           {tab}
-        </button>
+        </label>
       </li>
     ));
 

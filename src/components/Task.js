@@ -45,12 +45,8 @@ export default class Task extends Component {
           <span className="description">{this.props.task.description}</span>
           <span className="created">{`created ${this.state.time} ago`}</span>
         </div>
-        <button type="button" className="icon icon-edit" onClick={this.props.onEditDescription}>
-          {}
-        </button>
-        <button type="button" className="icon icon-destroy" onClick={this.props.onDeleteTask}>
-          {}
-        </button>
+        <button type="button" className="icon icon-edit" aria-label="Edit" onClick={this.props.onEditDescription} />
+        <button type="button" className="icon icon-destroy" aria-label="Destroy" onClick={this.props.onDeleteTask} />
       </div>
     );
   }
