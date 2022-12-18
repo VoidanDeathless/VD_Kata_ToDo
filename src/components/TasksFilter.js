@@ -17,13 +17,7 @@ export default class TasksFilter extends Component {
     const tabs = this.props.tabs.map((tab) => (
       <li key={tab}>
         <label htmlFor={tab} className={this.props.filter === tab ? 'selected' : ''}>
-          <input
-            type="radio"
-            name="filter"
-            id={tab}
-            onClick={() => this.props.onChangeFilter(tab)}
-            checked={this.props.filter === tab}
-          />
+          <input type="radio" name="filter" id={tab} onClick={() => this.props.onChangeFilter(tab)} />
           {tab}
         </label>
       </li>

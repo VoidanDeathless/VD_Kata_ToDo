@@ -17,10 +17,12 @@ export default class Task extends Component {
   };
 
   componentDidMount() {
-    this.timer = setInterval(() => this.tick(), 1000);
+    this.ticker = setInterval(() => this.tick(), 1000);
+    this.timer = setInterval(() => this.countdown(), 1000);
   }
 
   componentWillUnmount() {
+    clearInterval(this.ticker);
     clearInterval(this.timer);
   }
 
@@ -30,6 +32,18 @@ export default class Task extends Component {
         includeSeconds: true,
       }),
     });
+  }
+
+  countdown() {
+    if (this.props.task.timer > 0) this.props.task.timer -= 1;
+  }
+
+  startTimer() {
+    this.timer = setInterval(() => this.countdown(), 1000);
+  }
+
+  stopTimer() {
+    clearInterval(this.timer);
   }
 
   render() {
@@ -43,6 +57,11 @@ export default class Task extends Component {
         />
         <div className="label">
           <span className="description">{this.props.task.description}</span>
+          <span className="timer">
+            <button type="button" className="icon icon-play" onClick={() => this.startTimer()} aria-label="Play" />
+            <button type="button" className="icon icon-pause" onClick={() => this.stopTimer()} aria-label="Pause" />
+            {` ${Math.floor(this.props.task.timer / 60)}:${this.props.task.timer % 60}`}
+          </span>
           <span className="created">{`created ${this.state.time} ago`}</span>
         </div>
         <button type="button" className="icon icon-edit" aria-label="Edit" onClick={this.props.onEditDescription} />
