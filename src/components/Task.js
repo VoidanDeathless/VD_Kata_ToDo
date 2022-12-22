@@ -14,6 +14,7 @@ export default class Task extends Component {
     time: formatDistanceToNow(this.props.task.created, {
       includeSeconds: true,
     }),
+    isCountdown: true,
   };
 
   componentDidMount() {
@@ -39,11 +40,21 @@ export default class Task extends Component {
   }
 
   startTimer() {
-    this.timer = setInterval(() => this.countdown(), 1000);
+    if (!this.state.isCountdown) {
+      this.timer = setInterval(() => this.countdown(), 1000);
+      this.setState({ isCountdown: true });
+    }
   }
 
   stopTimer() {
     clearInterval(this.timer);
+    this.setState({ isCountdown: false });
+  }
+
+  toggleTimer() {
+    this.props.onToggleCompleted();
+    if (!this.props.task.completed) this.stopTimer();
+    if (this.props.task.completed) this.startTimer();
   }
 
   render() {
@@ -53,7 +64,7 @@ export default class Task extends Component {
           className="toggle"
           type="checkbox"
           checked={this.props.task.completed}
-          onChange={this.props.onToggleCompleted}
+          onChange={() => this.toggleTimer()}
         />
         <div className="label">
           <span className="description">{this.props.task.description}</span>
