@@ -31,13 +31,6 @@
     "react/state-in-constructor": [2, "never"],
     "react/prefer-stateless-function": 0,
     "implicit-arrow-linebreak": 0,
-    "react/destructuring-assignment": [
-      2,
-      "never",
-      {
-        "ignoreClassFields": true
-      }
-    ],
     "linebreak-style": [0, "unix"],
     "quotes": ["error", "single"],
     "semi": ["error", "always"],
@@ -63,8 +56,20 @@
         "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
         "newlines-between": "always"
       }
-    ]
-  },
+    ],
+    "react/require-default-props": [0, {
+      "classes": "ignore",
+      "functions": "defaultArguments"
+    }],
+    "object-curly-newline": ["error", {
+      "ObjectExpression": "always",
+      "ObjectPattern": { "multiline": true },
+      "ImportDeclaration": "never",
+      "ExportDeclaration": { "multiline": true, "minProperties": 3 }
+  }],
+  "comma-dangle": [0, "never"],
+  "function-paren-newline": [0, "multiline"]
+},
   "settings": {
     "react": {
       "version": "detect"

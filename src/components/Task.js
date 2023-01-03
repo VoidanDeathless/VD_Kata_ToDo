@@ -1,83 +1,70 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
 
-export default class Task extends Component {
-  static propTypes = {
-    task: PropTypes.object.isRequired,
-    onDeleteTask: PropTypes.func.isRequired,
-    onToggleCompleted: PropTypes.func.isRequired,
-    onEditDescription: PropTypes.func.isRequired,
-  };
-
-  state = {
-    time: formatDistanceToNow(this.props.task.created, {
+function Task({ task, onDeleteTask, onToggleCompleted, onEditDescription, onCountdown }) {
+  const [createdTime, setCreatedTime] = useState(
+    formatDistanceToNow(task.created, {
       includeSeconds: true,
-    }),
-    isCountdown: true,
+    })
+  );
+  const [isCountdown, setIsCountdown] = useState(true);
+
+  let timer;
+
+  const tick = () => {
+    setCreatedTime(
+      formatDistanceToNow(task.created, {
+        includeSeconds: true,
+      })
+    );
   };
 
-  componentDidMount() {
-    this.ticker = setInterval(() => this.tick(), 1000);
-    this.timer = setInterval(() => this.countdown(), 1000);
-  }
+  useEffect(() => {
+    const ticker = setInterval(() => tick(), 1000);
+    return () => clearInterval(ticker);
+  }, []);
 
-  componentWillUnmount() {
-    clearInterval(this.ticker);
-    clearInterval(this.timer);
-  }
+  useEffect(() => {
+    if (isCountdown) timer = setInterval(() => onCountdown(), 1000);
+    if (!isCountdown) clearInterval(timer);
+    return () => clearInterval(timer);
+  }, [isCountdown]);
 
-  tick() {
-    this.setState({
-      time: formatDistanceToNow(this.props.task.created, {
-        includeSeconds: true,
-      }),
-    });
-  }
+  const startTimer = () => setIsCountdown(true);
 
-  countdown() {
-    if (this.props.task.timer > 0) this.props.task.timer -= 1;
-  }
+  const stopTimer = () => setIsCountdown(false);
 
-  startTimer() {
-    if (!this.state.isCountdown) {
-      this.timer = setInterval(() => this.countdown(), 1000);
-      this.setState({ isCountdown: true });
-    }
-  }
+  const toggleTimer = () => {
+    onToggleCompleted();
+    if (!task.completed) stopTimer();
+    if (task.completed) startTimer();
+  };
 
-  stopTimer() {
-    clearInterval(this.timer);
-    this.setState({ isCountdown: false });
-  }
-
-  toggleTimer() {
-    this.props.onToggleCompleted();
-    if (!this.props.task.completed) this.stopTimer();
-    if (this.props.task.completed) this.startTimer();
-  }
-
-  render() {
-    return (
-      <div className="view">
-        <input
-          className="toggle"
-          type="checkbox"
-          checked={this.props.task.completed}
-          onChange={() => this.toggleTimer()}
-        />
-        <div className="label">
-          <span className="description">{this.props.task.description}</span>
-          <span className="timer">
-            <button type="button" className="icon icon-play" onClick={() => this.startTimer()} aria-label="Play" />
-            <button type="button" className="icon icon-pause" onClick={() => this.stopTimer()} aria-label="Pause" />
-            {` ${Math.floor(this.props.task.timer / 60)}:${this.props.task.timer % 60}`}
-          </span>
-          <span className="created">{`created ${this.state.time} ago`}</span>
-        </div>
-        <button type="button" className="icon icon-edit" aria-label="Edit" onClick={this.props.onEditDescription} />
-        <button type="button" className="icon icon-destroy" aria-label="Destroy" onClick={this.props.onDeleteTask} />
+  return (
+    <div className="view">
+      <input className="toggle" type="checkbox" checked={task.completed} onChange={() => toggleTimer()} />
+      <div className="label">
+        <span className="description">{task.description}</span>
+        <span className="timer">
+          <button type="button" className="icon icon-play" onClick={() => startTimer()} aria-label="Play" />
+          <button type="button" className="icon icon-pause" onClick={() => stopTimer()} aria-label="Pause" />
+          {` ${Math.floor(task.timer / 60)}:${task.timer % 60}`}
+        </span>
+        <span className="created">{`created ${createdTime} ago`}</span>
       </div>
-    );
-  }
+      <button type="button" className="icon icon-edit" aria-label="Edit" onClick={onEditDescription} />
+      <button type="button" className="icon icon-destroy" aria-label="Destroy" onClick={onDeleteTask} />
+    </div>
+  );
 }
+
+Task.propTypes = {
+  task: PropTypes.object.isRequired,
+  onDeleteTask: PropTypes.func.isRequired,
+  onToggleCompleted: PropTypes.func.isRequired,
+  onEditDescription: PropTypes.func.isRequired,
+  onCountdown: PropTypes.func.isRequired,
+};
+
+export default Task;
